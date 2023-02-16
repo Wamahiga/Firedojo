@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase/app'
 import { 
    getFirestore, collection , onSnapshot,
    addDoc, deleteDoc, doc,
-   query, where
+   query, where,
+   orderBy, serverTimestamp, getDoc
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -31,7 +32,7 @@ const db = getFirestore()
 const colRef = collection(db, 'books')
 
 //queries
-const q = query(colRef, where("author", "==", "Dan Brown"))
+const q = query(colRef, orderBy('createdAt'))
 
 //realtime  collection data
 
@@ -52,6 +53,7 @@ addBookForm.addEventListener('submit', (e) => {
     addDoc(colRef, {
         title: addBookForm.title.value,
         author: addBookForm.author.value,
+        createdAt: serverTimestamp()
     
     })
     .then(() => {
@@ -71,3 +73,11 @@ deleteBookForm.addEventListener('submit', (e) => {
             deleteBookForm.reset()
         })
 })
+
+//get a single document
+
+const docRef = doc(db, 'books', 'SoQuLRhJw5tLvmFogruF')
+
+  onSnapshot(docRef, (doc) => {
+    console.log(doc.data(), doc.id)
+  })
